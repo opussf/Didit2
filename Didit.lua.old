@@ -1,0 +1,231 @@
+
+--[[**
+
+
+-- Statistics have a name and a number.
+local DidItStatistic;    -- the statistic number to use based GetRealZoneText, values taken from Wowhead
+
+-- A structure to hold the data to report, which is done once at the end once all player statistics have been recorded.
+local DidItPlayerName;    -- player's name
+local DidItParty1Name;    -- party1's name
+local DidItParty2Name;    -- party2's name
+local DidItParty3Name;    -- party3's name
+local DidItParty4Name;    -- party4's name
+local DidItPlayerStat;    -- value returned for player
+local DidItParty1Stat;    -- value returned for party1
+local DidItParty2Stat;    -- value returned for party2
+local DidItParty3Stat;    -- value returned for party3
+local DidItParty4Stat;    -- value returned for party4
+
+-- "State" variable.
+local DidItCharacter;    -- cycles through these values: player, party1, party2, party3, party4
+
+-- Direct the report to the desired place.
+local DidItChatType;    -- only supports "DEFAULT" and "PARTY"
+
+-- Little function to interchange output direction
+local function DidItReport(msg)
+	if DidItChatType == "PARTY" then SendChatMessage(msg, "PARTY");
+	else                             print(msg);
+	end
+end
+
+-- Create a frame, call it DidItFrame.
+local DidItFrame = DidItFrame or CreateFrame("Frame");
+
+-- This is the function that responds to events used by this AddOn, namely INSPECT_ACHIEVEMENT_READY.
+-- It stores the statistic value for the player, find the next player who's stat can be fetched and
+-- kicks off the fetch.
+local function DidItOutputValue()
+	-- This function called by the event INSPECT_ACHIEVEMENT_READY from a call to SetAchievementComparisonUnit()
+	-- First thing to do is actually get the statistic value.
+	local StatisticValue = GetComparisonStatistic(DidItStatistic);
+	-- No longer need to hold on to the comparison unit, so good coding style is to release it before setting another.
+	ClearAchievementComparisonUnit();
+	-- At this point we don't know to whom the statistic applies, figure this out and copy the statistic value to the correct place.
+	if     DidItCharacter == "player" then DidItPlayerStat = StatisticValue;
+	elseif DidItCharacter == "party1" then DidItParty1Stat = StatisticValue;
+	elseif DidItCharacter == "party2" then DidItParty2Stat = StatisticValue;
+	elseif DidItCharacter == "party3" then DidItParty3Stat = StatisticValue;
+	else                                   DidItParty4Stat = StatisticValue;
+	end
+
+	-- Now figure out if we should fetch a new statistic or if we're done.
+
+	local fetchStat = false;
+	local doneFetching = false;
+
+	-- Check if we should get stat for player "party1": s/he exists, is within Inspect distance (28 yards).
+	if DidItCharacter == "player" and GetNumPartyMembers() > 0 and CheckInteractDistance("party1", 1) then
+		-- Fetch statistic.
+		DidItCharacter = "party1";
+		DidItParty1Name = UnitName("party1");
+		fetchStat = true;
+	elseif DidItCharacter == "player" and GetNumPartyMembers() > 0 then
+		-- Too far away.  The next player is checked below.
+		DidItCharacter = "party1";
+		DidItParty1Name = UnitName("party1");
+		DidItParty1Stat = "too far away";
+	elseif DidItCharacter == "player" then
+		-- No more players, we're done.
+		doneFetching = true;
+	end
+
+	-- Check if we should get stat for player "party2": s/he exists, is within Inspect distance (28 yards) and not already fetching a stat or done.
+	if DidItCharacter == "party1" and GetNumPartyMembers() > 1 and CheckInteractDistance("party2", 1) and not fetchStat and not doneFetching then
+		-- Fetch statistic.
+		DidItCharacter = "party2";
+		DidItParty2Name = UnitName("party2");
+		fetchStat = true;
+	elseif DidItCharacter == "party1" and GetNumPartyMembers() > 1 and not fetchStat and not doneFetching then
+		-- Too far away.  The next player is checked below.
+		DidItCharacter = "party2";
+		DidItParty2Name = UnitName("party2");
+		DidItParty2Stat = "too far away";
+	elseif DidItCharacter == "party1" and not fetchStat and not doneFetching then
+		-- No more players, we're done.
+		doneFetching = true;
+	end
+
+	-- Check if we should get stat for player "party3": s/he exists, is within Inspect distance (28 yards) and not already fetching a stat or done.
+	if DidItCharacter == "party2" and GetNumPartyMembers() > 2 and CheckInteractDistance("party3", 1) and not fetchStat and not doneFetching then
+		-- Fetch statistic.
+		DidItCharacter = "party3";
+		DidItParty3Name = UnitName("party3");
+		fetchStat = true;
+	elseif DidItCharacter == "party2" and GetNumPartyMembers() > 2 and not fetchStat and not doneFetching then
+		-- Too far away.  The next player is checked below.
+		DidItCharacter = "party3";
+		DidItParty3Name = UnitName("party3");
+		DidItParty3Stat = "too far away";
+	elseif DidItCharacter == "party2" and not fetchStat and not doneFetching then
+		-- No more players, we're done.
+		doneFetching = true;
+	end
+
+	-- Check if we should get stat for player "party4": s/he exists, is within Inspect distance (28 yards) and not already fetching a stat or done.
+	if DidItCharacter == "party3" and GetNumPartyMembers() > 3 and CheckInteractDistance("party4", 1) and not fetchStat and not doneFetching then
+		-- Fetch statistic.
+		DidItCharacter = "party4";
+		DidItParty4Name = UnitName("party4");
+		fetchStat = true;
+	elseif DidItCharacter == "party3" and GetNumPartyMembers() > 3 and not fetchStat and not doneFetching then
+		-- Too far away.  The next player is checked below.
+		DidItCharacter = "party4";
+		DidItParty4Name = UnitName("party4");
+		DidItParty4Stat = "too far away";
+	elseif DidItCharacter == "party3" and not fetchStat and not doneFetching then
+		-- No more players, we're done.
+		doneFetching = true;
+	end
+
+	-- If we're on the last player then we are done.
+	if DidItCharacter == "party4" and not fetchStat then
+		doneFetching = true;
+	end
+
+	-- Now one of two things *must* happen: fetch a stat or output the report because we're done.
+	if fetchStat then
+		_ = SetAchievementComparisonUnit(DidItCharacter);    -- triggers the event INSPECT_ACHIEVEMENT_READY
+	elseif doneFetching then
+		-- Now output the report.
+		DidItReport("How many "..select(2, GetAchievementInfo(DidItStatistic)).." do *you* have?");
+		DidItReport("Results courtesy of the DidIt AddOn");
+		DidItReport("... "..DidItPlayerName.." = "..DidItPlayerStat);
+		if DidItCharacter == "party1" or DidItCharacter == "party2" or DidItCharacter == "party3" or DidItCharacter == "party4" then
+			DidItReport("... "..DidItParty1Name.." = "..DidItParty1Stat);
+		end
+		if DidItCharacter == "party2" or DidItCharacter == "party3" or DidItCharacter == "party4" then
+			DidItReport("... "..DidItParty2Name.." = "..DidItParty2Stat);
+		end
+		if DidItCharacter == "party3" or DidItCharacter == "party4" then
+			DidItReport("... "..DidItParty3Name.." = "..DidItParty3Stat);
+		end
+		if DidItCharacter == "party4" then
+			DidItReport("... "..DidItParty4Name.." = "..DidItParty4Stat);
+		end
+		-- Unregister the event otherwise if the player attempts to inspect other players
+		-- during the course of play this function will unexpectadly be called!
+		-- It gets re-registered if the slash command is used again.
+		DidItFrame:UnregisterEvent("INSPECT_ACHIEVEMENT_READY");
+	end
+end
+
+-- Frames have a method called SetScript which dictates what function is called when the specified scriptType occurs.
+-- The scriptType "OnEvent" means that a WoW event has occur for which the frame has been registered via the RegisterEvent method.
+--DidItFrame:SetScript("OnEvent", DidItOutputValue);
+
+-- Slash command secret sauce summary.  Global variables are defined by WoW to "register" slash commands.
+-- The first type are global variables that tell WoW which slash command strings, e.g. "/didit" map to which
+-- functions.  The second type is a global variable list defined by WoW that contains pointers to all the
+-- slash command functions, just add your slash command function to this list.
+
+-- For slash commands a unique identifier is needed for every *function* (multiple strings that call the
+--         same function share the same unique identifier e.g. /didit and /di could both do the exact
+--         same thing, i.e. call the same function)
+-- Create global variables per *string*: SLASH_uniqueId#, where # starts with 1 (which must exist) and
+--         can have 2, 3, etc if there is more than one string associated with the *same* function.
+-- Assign strings to the global variables:
+SLASH_DIDIT1 = '/didit';    -- function_unique_ID = DIDIT, string #1
+-- This AddOn only has one function (with a unique ID of 'DIDIT') and only one string to call that one function.  Pretty boring, I know.
+
+-- Add a new function to the global SlashCmdList, the name of the function (DIDIT) is unique and is used as its identifier.
+function SlashCmdList.DIDIT(msg, editbox)
+    -- The msg parameters dictate whether the report goes to party chat (if its party) or default chat frame (otherwise).
+	if     msg == "party" then DidItChatType = "PARTY";
+	elseif msg == ""      then DidItChatType = "DEFAULT";
+	else
+		print("DidIt usage:");
+		print("        /ditit party: reports to party chat");
+		print("        /ditit: reports to default chat window");
+		return;
+	end
+	-- Ensure player is actually in a 5-man instance.
+	if select(2, IsInInstance()) ~= "party" then
+		print("DidIt: Sorry, you must be in a 5-man instance.");
+		return;
+	end
+	-- Figure out which statistic to use based on instance (i.e. zone) name and instance difficulty.
+	-- All the statistic values are available on the Wowhead database (part of the URL for the statistic).
+	local ZoneName = GetRealZoneText();
+	local isHeroic = ( GetInstanceDifficulty() == 2 );    -- 1 --> normal, 2 --> heroic
+	-- In C: value = test ? x : y        In Lua: value = test and x or y        But x can never be the values false nor nil
+	if     ZoneName == "Utgarde Keep"               then DidItStatistic = isHeroic and 1504 or 1242;    -- Wrath of the Lich King
+	elseif ZoneName == "The Nexus"                  then DidItStatistic = isHeroic and 1505 or 1231;
+	elseif ZoneName == "Azjol-Nerub"                then DidItStatistic = isHeroic and 1506 or 1232;
+	elseif ZoneName == "Ahn'kahet: The Old Kingdom" then DidItStatistic = isHeroic and 1507 or 1233;
+	elseif ZoneName == "Drak'Tharon Keep"           then DidItStatistic = isHeroic and 1508 or 1234;
+	elseif ZoneName == "The Violet Hold"            then DidItStatistic = isHeroic and 1509 or 1235;
+	elseif ZoneName == "Gundrak"                    then DidItStatistic = isHeroic and 1510 or 1236;
+	elseif ZoneName == "Halls of Stone"             then DidItStatistic = isHeroic and 1511 or 1237;
+	elseif ZoneName == "Halls of Lightning"         then DidItStatistic = isHeroic and 1512 or 1238;
+	elseif ZoneName == "The Oculus"                 then DidItStatistic = isHeroic and 1513 or 1239;
+	elseif ZoneName == "Utgarde Pinnacle"           then DidItStatistic = isHeroic and 1514 or 1240;
+	elseif ZoneName == "The Culling of Stratholme"  then DidItStatistic = isHeroic and 1515 or 1241;
+	elseif ZoneName == "Trial of the Champion"      then DidItStatistic = isHeroic and 4027 or 4026;    -- Call of the Crusade
+	elseif ZoneName == "The Forge of Souls"         then DidItStatistic = isHeroic and 4716 or 4715;    -- Fall of the Lich King
+	elseif ZoneName == "Pit of Saron"               then DidItStatistic = isHeroic and 4721 or 4720;
+	elseif ZoneName == "Halls of Reflection"        then DidItStatistic = isHeroic and 4727 or 4726;
+	else
+		print("DidIt: Sorry,", ZoneName, "is not yet supported.");
+		return;
+	end
+	-- If the zone name was successfully detected, then start collecting data from players.
+	-- Collect statistic from the player first, then each party member after.
+	DidItCharacter = "player";
+	DidItPlayerName = UnitName(DidItCharacter);    -- update the report structure
+	-- First clearing the achievement comparison unit before setting a new one is a good coding practise.
+	-- Even though we are looking at statistics and not achievements to the WoW API they are both in the achievement category.
+	-- The WoW API uses the term "comparison unit" to indicate an arbitrary player nominated to inspect their achievements/statistics,
+	--         with the intention of (but not enforcing of) comparing against your own.
+	ClearAchievementComparisonUnit();
+	-- Setting a comparison unit takes a "long" time, like several seconds, whereupon future requests
+	--         for that player's particular achievements/statistics are instantaneous.  Setting a comparison unit goes off
+	--         to do its work and triggers an INSPECT_ACHIEVEMENT_READY event when complete.
+	--         This event is handled in this AddOn with the DidItOutputValue() function.  That function
+	--         gets the statistic then kicks off the process for a subsequent player until the last.
+	DidItFrame:RegisterEvent("INSPECT_ACHIEVEMENT_READY");
+	_ = SetAchievementComparisonUnit(DidItCharacter);
+end
+
+**]]--

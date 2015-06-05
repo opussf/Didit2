@@ -1,0 +1,11 @@
+## Interface: 50400
+## Title: Didit
+## Notes: @VERSION@ scans party members for statistics for the current dungeon
+## Author: Parq of Bloodhoof, sistersally of hyjal
+## Version: @VERSION@
+## Description: Shows number of runs a char has done of a dungeon
+## SavedVariables: Didit_players
+
+DiditData.lua
+Didit.lua
+Didit.xml
