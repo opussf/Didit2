@@ -1,4 +1,4 @@
-## Interface: 50400
+## Interface: @INTERFACE@
 ## Title: Didit
 ## Notes: @VERSION@ scans party members for statistics for the current dungeon
 ## Author: Parq of Bloodhoof, sistersally of hyjal
