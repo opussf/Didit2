@@ -35,7 +35,7 @@ end
 
 function Didit.GROUP_ROSTER_UPDATE()
 	-- code for when party members are changed
-	-- 
+	--
 	Didit.Print("Party Members changed");
 	for unitName, struct in pairs(Didit_players) do
 		Didit_players[unitName].lookup = nil;
@@ -165,7 +165,7 @@ function Didit.TooltipHook()
 			if Didit_players[Didit.tooltipName][Didit.statisticID].value then
 				GameTooltip:AddLine(string.format("Didit (%s): %s",
 						select(2,GetAchievementInfo(Didit.statisticID)),
-						--Didit.statisticID, 
+						--Didit.statisticID,
 						Didit_players[Didit.tooltipName][Didit.statisticID].value));
 			else
 				GameTooltip:AddLine("Didit?");
@@ -222,6 +222,7 @@ function Didit.GatherData()
 	local dnr = 15062;    -- dungeons & raids category
 	dnr = 14822;
 	dnr = 15096;
+	dnr = 15233
 	for i = 1, GetCategoryNumAchievements(dnr) do
 		local id, name, points, _, _, _, desc, _, _, _ = GetAchievementInfo(dnr, i);
 		points = GetStatistic(id);
@@ -230,7 +231,7 @@ function Didit.GatherData()
 	local listTable = GetStatisticsCategoryList();
 	for _,cat in pairs(listTable) do
 		Didit.Print(cat..":"..GetCategoryInfo(cat));
-		
+
 	end
 end
 function Didit.Print( msg, showName)
