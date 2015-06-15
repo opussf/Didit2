@@ -10,13 +10,13 @@ Didit.data = {
 	["Blackrock Depths"]    = function(isHeroic) return (1095); end,
 	["Blackrock Spire"]     = function(isHeroic) return (1096); end,
 	["Stratholme"]          = function(isHeroic) return (1097); end,
-	
+
 	["Onyxia's Lair"]       = function(isHeroic) return (1098); end,
 	["Molten Core"]         = function(isHeroic) return (1099); end,
 	["Blackwing Lair"]      = function(isHeroic) return (1100); end,
 	["Temple of Ahn'Qiraj"] = function(isHeroic) return (1101); end,
 	["Zul'Gurub"]           = function(isHeroic) return (1102); end,
-	
+
 	-- Burning Crusade
 	[14822] = 'Burning Crusade',
 --	["Hellfire Citadel: Ramparts"]            = function(isHeroic) return (isHeroic and nil or nil); end,
@@ -58,12 +58,12 @@ Didit.data = {
 	["Halls of Reflection"]        = function(isHeroic) return (isHeroic and 4727 or 4726); end,
 	-- Raids
 	["Icecrown Citadel"]           = function(isHeroic) return (isHeroic and 4686 or 4653); end,
-	
+
 	["15096"] = "Cata",
 	["Blackrock Caverns"]        = function(isHeroic) return (isHeroic and 5725 or 5724); end,
 	["Throne of the Tides"]      = function(isHeroic) return (isHeroic and 5727 or 5726); end,
 	["The Stonecore"]            = function(isHeroic) return (isHeroic and 5729 or 5728); end,
-	["The Vortex Pinnacle"]		     = function(isHeroic) return (isHeroic and 5731 or 5730); end,
+	["The Vortex Pinnacle"]      = function(isHeroic) return (isHeroic and 5731 or 5730); end,
 	["Grim Batol"]               = function(isHeroic) return (isHeroic and 5733 or 5732); end,
 	["Halls of Origination"]     = function(isHeroic) return (isHeroic and 5735 or 5734); end,
 	["Lost City of the Tol'vir"] = function(isHeroic) return (isHeroic and 5737 or 5736); end,
@@ -78,4 +78,18 @@ Didit.data = {
 --	["Well of Eternity - Heroic"]={"Peroth'arn","Azshara","Mannoroth","Varo'then"},
 --	["Hour of Twilight"]={"Arcurion","Asira Dawnslayer","Archbishop Benedictus"},
 --	["Hour of Twilight - Heroic"]={"Arcurion","Asira Dawnslayer","Archbishop Benedictus"},
+
+-- WoD
+	["15233"] = "WoD",
+	["Bloodmaul Slag Mines"]     = function(isHeroic) return (isHeroic and 9259 or 9258); end,
+	["Iron Docks"]               = function(isHeroic) return (isHeroic and 9261 or 9260); end,
+	["Auchindoun"]               = function(isHeroic) return (isHeroic and 9263 or 9262); end,
+	["Skyreach"]                 = function(isHeroic) return (isHeroic and 9267 or 9266); end,
+	-- 100 dungeons
+	["Grimrail Depot"]           = function(isHeroic) return (isHeroic and 9269 or 9268); end,
+	["The Everbloom"]            = function(isHeroic) return (isHeroic and 9272 or 9271); end,
+	["Shadowmoon Burial Grounds"]= function(isHeroic) return (isHeroic and 9274 or 9273); end,
+	["Upper Blackrock Spire"]    = function(isHeroic) return (isHeroic and 9276 or 9275); end,
+
+
 };
