@@ -18,15 +18,17 @@ if FileExists( dataFile ) then
 
 		for name, _ in pairs( Didit_players ) do
 			if name ~= "NotSet" then
-				strOut = strOut .. string.format( '<p name="%s">\n', name)
-
-
-				for aId, data in pairs( Didit_players[name]	 ) do
+				local aOut = ""
+				local lastUpdate = 0
+				for aId, data in pairs( Didit_players[name] ) do
 					if data.value then
-						strOut = strOut .. string.format( '\t<a id="%i" name="%s" value="%i" scanTS="%i"/>\n',
+						aOut = aOut .. string.format( '\t<a id="%i" name="%s" value="%i" scanTS="%i"/>\n',
 								aId, (data.name or "--"), (data.value == "--" and 0 or data.value), (data.scannedAt or 0) )
+						lastUpdate = math.max( lastUpdate, data.scannedAt or 0 )
 					end
 				end
+				strOut = strOut .. string.format( '<p name="%s" lastUpdate="%s">\n', name, lastUpdate )
+				strOut = strOut .. aOut
 				strOut = strOut .."</p>\n"
 			end
 		end
