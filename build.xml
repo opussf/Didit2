@@ -1,4 +1,4 @@
-<project name="Didit2" default="package">
+<project name="Didit" default="package">
 
 	<tstamp/>
 	<property file="build.properties"/>
@@ -107,6 +107,7 @@
 				<include name="Readme.txt"/>
 			</fileset>
 		</copy>
+		<chmod perm="ugo+x" dir="${addon.dir}" includes="Didit2*.lua" />
 	</target>
 
 	<target name="test" description="run unit tests" if="test.check">
