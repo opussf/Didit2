@@ -1,7 +1,7 @@
 -----------------------------------------
 -- Author  :  Opussf
 -- Date    :  $Date:$
--- Revision:  $Revision:$
+-- Revision:  @VERSION@
 -----------------------------------------
 -- These are functions from wow that have been needed by addons so far
 -- Not a complete list of the functions.
@@ -45,7 +45,7 @@ Items = {
 	["7073"] = {["name"] = "Broken Fang", ["link"] = "|cff9d9d9d|Hitem:7073:0:0:0:0:0:0:0:80:0:0|h[Broken Fang]|h|r", ["texture"] = ""},
 	["6742"] = {["name"] = "UnBroken Fang", ["link"] = "|cff9d9d9d|Hitem:6742:0:0:0:0:0:0:0:80:0:0|h[UnBroken Fang]|h|r", ["texture"] = ""},
 	["22261"] = {["name"] = "Love Fool", ["link"] = "|cff9d9d9d|Hitem:22261:0:0:0:0:0:0:0:80:0:0|h[Love Fool]|h|r", ["texture"] = ""},
-	["23784"] = {["name"] = "Adamantite Frame", ["link"] = "", ["texture"] = ""},
+	["23784"] = {["name"] = "Adamantite Frame", ["link"] = "|cff9d9d9d|Hitem:23784:0:0:0:0:0:0:0:80:0:0|h[Adanabtute Frame]|h|r", ["texture"] = ""},
 	["23786"] = {["name"] = "Khorium Power Core", ["link"] = "|cffffff|Hitem:23786|h[Khorium Power Core]|h|r", ["texture"] = ""},
 	["23787"] = {["name"] = "Felsteel Stabilizer", ["link"] = "|cffffff|Hitem:23787|h[Felsteel Stabilizer]|h|r", ["texture"] = ""},
 	["34061"] = {["name"] = "Turbo-Charged Flying Machine", ["link"] = "|cff9d9d9d|Hitem:34061:0:0:0:0:0:0:0:80:0:0|h[Turbo-Charged Flying Machine]|h|r", ["texture"] = ""},
@@ -122,6 +122,7 @@ strtolower = string.lower
 time = os.time
 date = os.date
 max = math.max
+min = math.min
 random = math.random
 tinsert = table.insert
 
@@ -157,9 +158,21 @@ ITEM_BIND_ON_PICKUP="Binds when picked up"
 Frame = {
 		["Events"] = {},
 		["Hide"] = function() end,
+		["Show"] = function() end,
+		["IsShown"] = function() return(true) end,
 		["RegisterEvent"] = function(event) Frame.Events.event = true; end,
 		["SetPoint"] = function() end,
 		["UnregisterEvent"] = function(event) Frame.Events.event = nil; end,
+		["GetName"] = function(self) return self.framename end,
+		["SetFrameStrata"] = function() end,
+		["SetWidth"] = function(self, value) self.width = value; end,
+		["SetHeight"] = function(self, value) self.height = value; end,
+		["CreateFontString"] = function(self, ...) return(CreateFontString(...)) end,
+
+		["SetMinMaxValues"] = function() end,
+		["SetValue"] = function() end,
+		["SetStatusBarColor"] = function() end,
+
 }
 FrameGameTooltip = {
 		["GetName"] = function(self) return self.name end,
@@ -627,7 +640,7 @@ function GetTradeSkillReagentItemLink( skillIndex, reagentIndex )
 	-- returns LINK or NIL (?)
 	if TradeSkillItems[skillIndex] then
 		if TradeSkillItems[skillIndex].reagents[reagentIndex] then
-			return TradeSkillItems[skillIndex].reagents[reagentIndex].link
+			return Items[ TradeSkillItems[skillIndex].reagents[reagentIndex].id ].link
 		end
 	end
 end
