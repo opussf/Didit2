@@ -3,6 +3,14 @@ Didit = {};
 Didit.data = {
 	-- Classic
 	[14821] = 'Classic',
+	["Temple of Ahn'Qiraj"] =   { ["Normal"] = 1101 },
+	["Scarlet Halls"] =         { ["Normal"] = 932 }, -- Research this...
+	["Molten Core"] =           { ["Normal"] = 1099 },
+
+	["Stormwind Stockade"] =    { ["Normal"] = 633 },
+	["Gnomeregan"] =            { ["Normal"] = 634 },
+
+
 	["Deadmines"]           = function(isHeroic) return (isHeroic and 5738 or 1091); end,
 	["Shadowfang Keep"]     = function(isHeroic) return (isHeroic and 5739 or 1092); end,
 	["Scarlet Monastary"]   = function(isHeroic) return (1093); end,
@@ -14,8 +22,23 @@ Didit.data = {
 	["Onyxia's Lair"]       = function(isHeroic) return (1098); end,
 	["Molten Core"]         = function(isHeroic) return (1099); end,
 	["Blackwing Lair"]      = function(isHeroic) return (1100); end,
-	["Temple of Ahn'Qiraj"] = function(isHeroic) return (1101); end,
+
 	["Zul'Gurub"]           = function(isHeroic) return (1102); end,
+
+	-- BfA
+	[15409] = 'BfA',
+	["Atal'Dazar"] =            { ["Normal"] = 12720, ["Heroic"] = 12748, ["Mythic"] = 12749 },
+	["Freehold"] =              { ["Normal"] = 12750, ["Heroic"] = 12751, ["Mythic"] = 12752 },
+	["King's Rest"] =           {                                         ["Mythic"] = 12763 },
+	["Shrine of the Storm"] =   { ["Normal"] = 12766, ["Heroic"] = 12767, ["Mythic"] = 12768 },
+	["Siege of Boralus"] =      {                                         ["Mythic"] = 12773 },
+	["Temple of Sethraliss"] =  { ["Normal"] = 12774, ["Heroic"] = 12775, ["Mythic"] = 12776 },
+	["The MOTHERLODE!!"] =      { ["Normal"] = 12777, ["Heroic"] = 12778, ["Mythic"] = 12779 },
+	["The Underrot"] =          { ["Normal"] = 12728, ["Heroic"] = 12729, ["Mythic"] = 12745 },
+	["Tol Dagar"] =             { ["Normal"] = 12780, ["Heroic"] = 12781, ["Mythic"] = 12782 },
+	["Waycrest Manor"] =        { ["Normal"] = 12783, ["Heroic"] = 12784, ["Mythic"] = 12785 },
+
+
 
 	-- Burning Crusade
 	[14822] = 'Burning Crusade',
