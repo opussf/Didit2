@@ -30,18 +30,14 @@ function Didit.OnLoad()
 	Didit.myName = UnitName( "player" )
 	Didit.Debug( "Starting Didit up" )
 end
-function Didit.Print( msg, showName)
+function Didit.Print( msg, showName )
 	-- print to the chat frame
 	-- set showName to false to suppress the addon name printing
 	if (showName == nil) or (showName) then
 		--msg = COLOR_RED.."Didit> "..COLOR_END..msg;
 		msg = COLOR_NEON_BLUE.."Didit> "..COLOR_END..msg
 	end
-	if (Didit.toParty and IsInGroup() ) then
-		SendChatMessage( msg, "PARTY" );
-	else
-		DEFAULT_CHAT_FRAME:AddMessage( msg );
-	end
+	DEFAULT_CHAT_FRAME:AddMessage( msg );
 end
 function Didit.Debug( msg )
 	if Didit.debug then
@@ -51,7 +47,7 @@ end
 function Didit.GROUP_ROSTER_UPDATE()
 	-- code for when party members are changed
 	--
-	Didit.Print( "GROUP_ROSTER_UPDATE" )
+	Didit.Debug( "GROUP_ROSTER_UPDATE" )
 	-- Clear the lookup string for all known players
 	for unitName, struct in pairs( Didit_players ) do
 		Didit_players[unitName].lookup = nil
@@ -147,19 +143,68 @@ function Didit.ScanPlayers()
 	end
 
 end
-function Didit.Report( toParty )
+--[[
+if( param ) then
+		if( param == "guild" and IsInGuild() ) then
+			chatChannel = "GUILD"
+		elseif( param == "party" and IsInGroup() ) then
+			chatChannel = "PARTY"
+		elseif( param == "instance" and IsInGroup( LE_PARTY_CATEGORY_INSTANCE ) ) then
+			chatChannel = "INSTANCE"
+		elseif( param == 'raid' and IsInRaid() ) then
+			chatChannel = "RAID"
+		elseif( param ~= "" ) then
+			chatChannel = "WHISPER"
+			toWhom = param
+		end
+
+		if( chatChannel ) then
+			SendChatMessage( totalStr, chatChannel, nil, toWhom )  -- toWhom will be nil for most
+			if( timerCount > 0 ) then
+				SendChatMessage( timerStr, chatChannel, nil, toWhom )
+			end
+		else
+			Hitlist.print(totalStr);
+			if (timerCount > 0) then
+				Hitlist.print(timerStr);
+			end
+		end
+	end
+]]
+function Didit.Report( chatChannel )
+	-- INSTANCE, PARTY, GUILD, SAY
+	if( chatChannel == "INSTANCE" and not IsInGroup( LE_PARTY_CATEGORY_INSTANCE ) ) then
+		chatChannel = "PARTY"
+	end
+	if( chatChannel == "PARTY" and not IsInGroup() ) then
+		chatChannel = "SAY"
+	end
+	if( chatChannel == "GUILD" and not IsInGuild() ) then
+		chatChannel = "SAY"
+	end
+
 	if Didit.statisticID then
-		Didit.Print( string.format( "How many %s do *you* have?", select( 2, GetAchievementInfo( Didit.statisticID ) ) ), false )
+		Didit.report = {}
+		table.insert( Didit.report, string.format( "How many %s do *you* have?", select( 2, GetAchievementInfo( Didit.statisticID ) ) ) )
 		for i = 0, GetNumGroupMembers() do
 			local lookupString = i>0 and "party"..i or "player"
 			local unitName = GetUnitName( lookupString )
 			local playerInfo = Didit_players[unitName]
+			local reportLine = ""
 			if playerInfo and playerInfo[Didit.statisticID].value then
-				Didit.Print( string.format( "... %s for %s", playerInfo[Didit.statisticID].value, unitName ), false )
+				reportLine = string.format( "... %s for %s", playerInfo[Didit.statisticID].value, unitName )
 			elseif playerInfo and playerInfo.error then
-				Didit.Print( string.format( "Error: %s for %s", playerInfo.error, unitName ), false )
+				reportLine = string.format( "Error: %s for %s", playerInfo.error, unitName )
 			elseif unitName then
-				Didit.Print( string.format( "%s has not yet been scanned.", unitName ), false )
+				reportLine = string.format( "%s has not yet been scanned.", unitName )
+			end
+			table.insert( Didit.report, reportLine )
+		end
+		for i, reportLine in pairs( Didit.report ) do
+			if( chatChannel ) then
+				SendChatMessage( reportLine, chatChannel )
+			else
+				Didit.Print( reportLine, false )
 			end
 		end
 	else
@@ -171,7 +216,7 @@ function Didit.TooltipHook()
 		Didit.tooltipName = GetUnitName( "mouseover" )
 		Didit.Debug( ("tooltipName: %s"):format( Didit.tooltipName or "nil" ) )
 		if Didit_players[Didit.tooltipName] and Didit_players[Didit.tooltipName][Didit.statisticID] then
-			Didit.Print( "I know both the player, and a statID for them." )
+			Didit.Debug( "I know both the player, and a statID for them." )
 			if Didit_players[Didit.tooltipName][Didit.statisticID].value then
 				GameTooltip:AddLine( string.format( "Didit (%s): %s",
 						select( 2, GetAchievementInfo( Didit.statisticID ) ),
@@ -186,9 +231,21 @@ function Didit.TooltipHook()
 end
 
 Didit.commandList = {
+	["instance"] = {
+		["help"] = "Display report to the instance",
+		["cmd"] = function() Didit.Report( "INSTANCE" ); end,
+	},
 	["party"] = {
 		["help"] = "Display report to the party",
-		["cmd"] = function() Didit.Report( true ); end,
+		["cmd"] = function() Didit.Report( "PARTY" ); end,
+	},
+	["guild"] = {
+		["help"] = "Display report to guild",
+		["cmd"] = function() Didit.Report( "GUILD" ); end,
+	},
+	["say"] = {
+		["help"] = "Display report to say",
+		["cmd"] = function() Didit.Report( "SAY" ); end,
 	},
 	["help"] = {
 		["help"] = "Show this list",
