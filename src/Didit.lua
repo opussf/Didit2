@@ -123,7 +123,7 @@ function Didit.ScanPlayers()
 	Didit.Print( "Starting the scan of players" )
 	if Didit.statisticID and not Didit.scanName then
 		Didit.Print( "StatID: "..Didit.statisticID.." not currently scanning " )
-		for i = 1, GetNumGroupMembers() do
+		for i = 0, GetNumGroupMembers() do
 			local lookupString = i>0 and Didit.lookupPre..i or "player"
 			local unitName = GetUnitName( lookupString ) or "NotSet"
 			Didit.Print( "unitName: "..unitName )
@@ -173,18 +173,23 @@ function Didit.Report( chatChannel )
 			local unitName = GetUnitName( lookupString )
 			local playerInfo = Didit_players[unitName]
 			local reportLine = ""
+			if playerInfo then
+				print( "I have playerInfo" )
+				if playerInfo[Didit.statisticID].value then
+					print( unitName.." has a value for "..Didit.statisticID )
+					reportLine = string.format( "... %s for %s", playerInfo[Didit.statisticID].value, unitName )
+				elseif playerInfo.error then
+					print( unitName.." has an error" )
+					reportLine = string.format( "Error: %s for %s", playerInfo.error, unitName )
+				else
+					reportLine = string.format( "%s has not yet been scanned.", unitName )
+				end
+			end
 			Didit.Print( string.format( "%s for %s = %s",
 					( Didit.statisticID or "nil" ),
 					( unitName or "nil" ),
-					( playerInfo[Didit.statisticID].value or nil )
+					( playerInfo[Didit.statisticID].value or "nil" )
 			) )
-			if playerInfo and playerInfo[Didit.statisticID].value then
-				reportLine = string.format( "... %s for %s", playerInfo[Didit.statisticID].value, unitName )
-			elseif playerInfo and playerInfo.error then
-				reportLine = string.format( "Error: %s for %s", playerInfo.error, unitName )
-			elseif unitName then
-				reportLine = string.format( "%s has not yet been scanned.", unitName )
-			end
 			table.insert( Didit.report, reportLine )
 		end
 		for i, reportLine in pairs( Didit.report ) do
