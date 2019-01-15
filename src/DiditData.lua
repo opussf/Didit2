@@ -35,7 +35,7 @@ Didit.data = {
 	["Temple of Sethraliss"] =  { ["Normal"] = 12774, ["Heroic"] = 12775, ["Mythic"] = 12776 },
 	["The MOTHERLODE!!"] =      { ["Normal"] = 12777, ["Heroic"] = 12778, ["Mythic"] = 12779 },
 	["The Underrot"] =          { ["Normal"] = 12728, ["Heroic"] = 12729, ["Mythic"] = 12745 },
-	["Tol Dagar"] =             { ["Normal"] = 12780, ["Heroic"] = 12781, ["Mythic"] = 12782 },
+	["Tol Dagor"] =             { ["Normal"] = 12780, ["Heroic"] = 12781, ["Mythic"] = 12782 },
 	["Waycrest Manor"] =        { ["Normal"] = 12783, ["Heroic"] = 12784, ["Mythic"] = 12785 },
 
 

@@ -17,6 +17,7 @@ COLOR_GOLD = "|cffcfb52b"
 COLOR_NEON_BLUE = "|cff4d4dff"
 COLOR_END = "|r"
 
+Didit.lookupPre = "party"
 --Didit = {};  -- set in DiditData
 Didit_players= {}  -- Didit.players[unitName][statID] = {["lookup"] = lookupString};
 function Didit.OnLoad()
@@ -48,23 +49,18 @@ function Didit.GROUP_ROSTER_UPDATE()
 	-- code for when party members are changed
 	--
 	Didit.Debug( "GROUP_ROSTER_UPDATE" )
-	-- Clear the lookup string for all known players
-	for unitName, struct in pairs( Didit_players ) do
-		Didit_players[unitName].lookup = nil
-	end
 	-- scan the players
 	for i = 1, GetNumGroupMembers() do
-		local lookupString = "party"..i
+		local lookupString = Didit.lookupPre..i
 		local unitName = GetUnitName( lookupString ) or "NotSet"
 		Didit.Debug( ("unitName: %s"):format( unitName or "Not Set" ) )
 		if not Didit_players[unitName] then
 			Didit_players[unitName] = {}
 			Didit.Print( ("init player: %s"):format( unitName ) )
 		end
-		Didit_players[unitName].lookup = lookupString
 		if Didit.statisticID and not Didit_players[unitName][Didit.statisticID] then
 			Didit.Print( ("  I haz a statisticID(%s) and need to init %s"):format( Didit.statisticID, unitName ) )
-			Didit_players[unitName][Didit.statisticID] = {}
+			Didit_players[unitName][Didit.statisticID] = { Started = "Yes" }
 		end
 	end
 	if not Didit_players[Didit.myName] then
@@ -74,8 +70,10 @@ end
 function Didit.PLAYER_ENTERING_WORLD()
 	-- code to run when entering the world
 	Didit.Print( "Player Entering World" )
-	local inInstance, instanceType = IsInInstance()  -- 1nil, string( arena, none, party, pvp, raid)
-	Didit.Print( (inInstance and "IN" or "NOT IN").." instance type:"..( instanceType or "nil" ) )
+	inInstance, lookupPre = IsInInstance()  -- 1nil, string( arena, none, party, pvp, raid)
+	Didit.lookupPre = lookupPre
+
+	Didit.Print( (inInstance and "IN" or "NOT IN").." instance type:"..( Didit.lookupPre or "nil" ) )
 	if( inInstance ) then
 		local iName, iType, iDiff = GetInstanceInfo()
 		local iDiffStr = GetDifficultyInfo( iDiff )
@@ -88,6 +86,9 @@ function Didit.PLAYER_ENTERING_WORLD()
 				and Didit.data[iName][iDiffStr] or 932  -- 932 is # of 5 man dungeons entered
 		Didit.Print( string.format( "Stat #: %s (%s - %s)", Didit.statisticID, select( 2, GetAchievementInfo( Didit.statisticID ) ), iDiffStr ) )
 		Didit.Print( ("value: %s"):format( GetStatistic( Didit.statisticID ) ) )
+
+
+
 		Didit_players[Didit.myName] = { [Didit.statisticID] = {} }
 		Didit_players[Didit.myName][Didit.statisticID]["value"] = GetStatistic( Didit.statisticID )
 		Didit_players[Didit.myName][Didit.statisticID]["dungeon"] = select( 2, GetDifficultyInfo( Didit.statisticID ) )
@@ -115,18 +116,24 @@ function Didit.INSPECT_ACHIEVEMENT_READY()
 	DiditFrame:UnregisterEvent( "INSPECT_ACHIEVEMENT_READY" )
 	ClearAchievementComparisonUnit()
 	--Didit.Report();
+	Didit.ScanPlayers()
 end
 function Didit.ScanPlayers()
 	-- scan the players
 	Didit.Print( "Starting the scan of players" )
 	if Didit.statisticID and not Didit.scanName then
-		for unitName, struct in pairs( Didit_players ) do
-			if struct.lookup and -- has the lookup text
+		Didit.Print( "StatID: "..Didit.statisticID.." not currently scanning " )
+		for i = 1, GetNumGroupMembers() do
+			local lookupString = i>0 and Didit.lookupPre..i or "player"
+			local unitName = GetUnitName( lookupString ) or "NotSet"
+			Didit.Print( "unitName: "..unitName )
+			struct = Didit_players[unitName]
+			if struct and
 					(not struct[Didit.statisticID].value or struct[Didit.statisticID].scannedAt+3600 < time()) then
 					-- missing the value, or the data is older than an hour
-				Didit.Print( string.format( "Scanning: %s (%s)", struct.lookup, unitName ) )
-				if CheckInteractDistance( struct.lookup, 1 ) then  -- 1=inspect range
-					SetAchievementComparisonUnit( struct.lookup )
+				Didit.Print( string.format( "Scanning: %s (%s)", lookupString, unitName ) )
+				if CheckInteractDistance( lookupString, 1 ) then  -- 1=inspect range
+					SetAchievementComparisonUnit( lookupString )
 					Didit.scanName = unitName
 					DiditFrame:RegisterEvent( "INSPECT_ACHIEVEMENT_READY" )
 					Didit.Print( "In range to inspect: "..Didit.scanName )
@@ -143,38 +150,13 @@ function Didit.ScanPlayers()
 	end
 
 end
---[[
-if( param ) then
-		if( param == "guild" and IsInGuild() ) then
-			chatChannel = "GUILD"
-		elseif( param == "party" and IsInGroup() ) then
-			chatChannel = "PARTY"
-		elseif( param == "instance" and IsInGroup( LE_PARTY_CATEGORY_INSTANCE ) ) then
-			chatChannel = "INSTANCE"
-		elseif( param == 'raid' and IsInRaid() ) then
-			chatChannel = "RAID"
-		elseif( param ~= "" ) then
-			chatChannel = "WHISPER"
-			toWhom = param
-		end
-
-		if( chatChannel ) then
-			SendChatMessage( totalStr, chatChannel, nil, toWhom )  -- toWhom will be nil for most
-			if( timerCount > 0 ) then
-				SendChatMessage( timerStr, chatChannel, nil, toWhom )
-			end
-		else
-			Hitlist.print(totalStr);
-			if (timerCount > 0) then
-				Hitlist.print(timerStr);
-			end
-		end
-	end
-]]
 function Didit.Report( chatChannel )
 	-- INSTANCE, PARTY, GUILD, SAY
 	if( chatChannel == "INSTANCE" and not IsInGroup( LE_PARTY_CATEGORY_INSTANCE ) ) then
 		chatChannel = "PARTY"
+	end
+	if( chatChannel == "INSTANCE" ) then
+		chatChannel = "INSTANCE_CHAT"
 	end
 	if( chatChannel == "PARTY" and not IsInGroup() ) then
 		chatChannel = "SAY"
@@ -187,10 +169,15 @@ function Didit.Report( chatChannel )
 		Didit.report = {}
 		table.insert( Didit.report, string.format( "How many %s do *you* have?", select( 2, GetAchievementInfo( Didit.statisticID ) ) ) )
 		for i = 0, GetNumGroupMembers() do
-			local lookupString = i>0 and "party"..i or "player"
+			local lookupString = i>0 and Didit.lookupPre..i or "player"
 			local unitName = GetUnitName( lookupString )
 			local playerInfo = Didit_players[unitName]
 			local reportLine = ""
+			Didit.Print( string.format( "%s for %s = %s",
+					( Didit.statisticID or "nil" ),
+					( unitName or "nil" ),
+					( playerInfo[Didit.statisticID].value or nil )
+			) )
 			if playerInfo and playerInfo[Didit.statisticID].value then
 				reportLine = string.format( "... %s for %s", playerInfo[Didit.statisticID].value, unitName )
 			elseif playerInfo and playerInfo.error then
