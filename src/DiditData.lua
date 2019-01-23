@@ -3,27 +3,64 @@ Didit = {};
 Didit.data = {
 	-- Classic
 	[14821] = 'Classic',
-	["Temple of Ahn'Qiraj"] =   { ["Normal"] = 1101 },
-	["Scarlet Halls"] =         { ["Normal"] = 932 }, -- Research this...
+	["Deadmines"] =             { ["Normal"] = 1091, ["Heroic"] = 5738 },
+	["Shadowfang Keep"] =       { ["Normal"] = 1092, ["Heroic"] = 5739 },
+	["Scarlet Monastary"] =     { ["Normal"] = 1093 },
+	["Zul'Farrak"] =            { ["Normal"] = 1094 },
+	["Blackrock Depths"] =      { ["Normal"] = 1095 },
+	["Upper Blackrock Spire"] = { ["Normal"] = 1096 },
+	["Stratholme"] =            { ["Normal"] = 1097 },
+	["Onyxia's Lair"] =         { ["Normal"] = 1098 },
 	["Molten Core"] =           { ["Normal"] = 1099 },
+	["Blackwing Lair"] =        { ["Normal"] = 1100 },
+	["Temple of Ahn'Qiraj"] =   { ["Normal"] = 1101 },
 
-	["Stormwind Stockade"] =    { ["Normal"] = 633 },
-	["Gnomeregan"] =            { ["Normal"] = 634 },
+	["Ragefire Chasm"] =        { ["Normal"] = 6135 },
+	["Wailing Caverns"] =       { ["Normal"] = 6136 },
+	["Blackfathom Deeps"] =     { ["Normal"] = 6137 },
+	["Stormwind Stockade"] =    { ["Normal"] = 6138 },
+	["Razorfen Kraul"] =        { ["Normal"] = 6139 },
+	["Gnomeregan"] =            { ["Normal"] = 6140 },
+	["Razorfen Downs"] =        { ["Normal"] = 6141 },
+	["Uldaman"] =               { ["Normal"] = 6142 },
+	["Maraudon"] =              { ["Normal"] = 6143 },
+	["Sunken Temple"] =         { ["Normal"] = 6144 },
+	["Lower Blackrock Spire"] = { ["Normal"] = 6145 },
+	["Dire Maul"] =             { ["Normal"] = 6146 },
+
+	["Ruins of Ahn'Qiraj"] =    { ["Normal"] = 6337 },
+
+	["Scarlet Halls"] =         { ["Normal"] = 6786 },
+
+	-- Burning Crusade
+	[14822] = 'Burning Crusade',
+	["The Blood Furnace"] =          { ["Normal"] = 1068 },
+	["Mana-Tombs"] =                 { ["Normal"] = 1069 },
+	["The Escape From Durnholde"] =  { ["Normal"] = 1070 },
+	["Slave Pens"] =                 { ["Normal"] = 1071 },
+	["Underbog"] =                   { ["Normal"] = 1072 },
+	["Auchenai Crypts"] =            { ["Normal"] = 1073 },
+	["Sethekk Halls"] =              { ["Normal"] = 1074 },
+	["Shadow Labyrinth"] =           { ["Normal"] = 1075 },
+	["Opening of the Dark Portal"] = { ["Normal"] = 1076 },
+	["The Steamvault"] =             { ["Normal"] = 1077 },
+	["The Shattered Halls"] =        { ["Normal"] = 1078 },
+	["The Mechanar"] =               { ["Normal"] = 1079 },
+	["The Botanica"] =               { ["Normal"] = 1080 },
+	["The Arcatraz"] =               { ["Normal"] = 1081 },
+	["Magister's Terrace"] =         { ["Normal"] = 1082 },
+	["Karazhan"] =                   { ["Normal"] = 1083 },
+	["Zul'Aman"] =                   { ["Normal"] = 1084 },
+	["Gruul's Lair"] =               { ["Normal"] = 1085 },
+	["Magtheridon's Lair"] =         { ["Normal"] = 1086 },
+	["Serpentshrine Cavern"] =       { ["Normal"] = 1087 },
+	["Tempest Keep"] =               { ["Normal"] = 1088 },
+	["The Black Temple"] =           { ["Normal"] = 1089 },
+	["Sunwell Plateau"] =            { ["Normal"] = 1090 },
+	["Hellfire Ramparts"] =          { ["Normal"] = 6147 },
+	["Battle for Mount Hyjal"] =     { ["Normal"] = 6148 },
 
 
-	["Deadmines"]           = function(isHeroic) return (isHeroic and 5738 or 1091); end,
-	["Shadowfang Keep"]     = function(isHeroic) return (isHeroic and 5739 or 1092); end,
-	["Scarlet Monastary"]   = function(isHeroic) return (1093); end,
-	["Zul'Farrak"]          = function(isHeroic) return (1094); end,
-	["Blackrock Depths"]    = function(isHeroic) return (1095); end,
-	["Blackrock Spire"]     = function(isHeroic) return (1096); end,
-	["Stratholme"]          = function(isHeroic) return (1097); end,
-
-	["Onyxia's Lair"]       = function(isHeroic) return (1098); end,
-	["Molten Core"]         = function(isHeroic) return (1099); end,
-	["Blackwing Lair"]      = function(isHeroic) return (1100); end,
-
-	["Zul'Gurub"]           = function(isHeroic) return (1102); end,
 
 	-- BfA
 	[15409] = 'BfA',
@@ -40,26 +77,7 @@ Didit.data = {
 
 
 
-	-- Burning Crusade
-	[14822] = 'Burning Crusade',
---	["Hellfire Citadel: Ramparts"]            = function(isHeroic) return (isHeroic and nil or nil); end,
-	["Hellfire Citadel: The Blood Furnace"]   = function(isHeroic) return (isHeroic and 0 or 1068); end,
-	["Hellfire Citadel: The Shattered Halls"] = function(isHeroic) return (isHeroic and 0 or 1078); end,
-	["Coilfang: The Slave Pens"]              = function(isHeroic) return (isHeroic and 0 or 1071); end,
-	["Coilfang: The Underbog"]                = function(isHeroic) return (isHeroic and 0 or 1072); end,
-	["Coilfang: The Steamvault"]                        = function(isHeroic) return (isHeroic and 0 or 1077); end,
-	["Auchindoun: Mana-Tombs"]                = function(isHeroic) return (isHeroic and 0 or 1069); end,
-	["Auchindoun: Auchenai Crypts"]           = function(isHeroic) return (isHeroic and 0 or 1073); end,
-	["Auchindoun: Sethekk Halls"]             = function(isHeroic) return (isHeroic and 0 or 1074); end,
-	["Auchindoun: Shadow Labyrinth"]          = function(isHeroic) return (isHeroic and 0 or 1075); end,
-	["Old Hillsbrad Foothills"]               = function(isHeroic) return (isHeroic and 0 or 0); end,
-	["The Escape From Durnholde"]             = function(isHeroic) return (isHeroic and 0 or 1070); end,
-	["The Black Morass"]                      = function(isHeroic) return (isHeroic and 0 or 0); end,
-	["The Mechanar"]                          = function(isHeroic) return (isHeroic and 0 or 1079); end,
-	["The Botanica"]                          = function(isHeroic) return (isHeroic and 0 or 1080); end,
-	["The Arcatraz"]                          = function(isHeroic) return (isHeroic and 0 or 1081); end,
-	["Magister's Terrace"]                    = function(isHeroic) return (isHeroic and 0 or 1082); end,
-	--Opening the Dark portal -- 1076
+
 
 	["14823"] = "WotLK",
 	-- WoLK
