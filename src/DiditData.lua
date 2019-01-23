@@ -5,7 +5,7 @@ Didit.data = {
 	[14821] = 'Classic',
 	["Deadmines"] =             { ["Normal"] = 1091, ["Heroic"] = 5738 },
 	["Shadowfang Keep"] =       { ["Normal"] = 1092, ["Heroic"] = 5739 },
-	["Scarlet Monastary"] =     { ["Normal"] = 1093 },
+	["Scarlet Monastary"] =     { ["Normal"] = 1093, ["Heroic"] = 6785 },
 	["Zul'Farrak"] =            { ["Normal"] = 1094 },
 	["Blackrock Depths"] =      { ["Normal"] = 1095 },
 	["Upper Blackrock Spire"] = { ["Normal"] = 1096 },
@@ -30,7 +30,7 @@ Didit.data = {
 
 	["Ruins of Ahn'Qiraj"] =    { ["Normal"] = 6337 },
 
-	["Scarlet Halls"] =         { ["Normal"] = 6786 },
+	["Scarlet Halls"] =         { ["Normal"] = 6786, ["Heroic"] = 6784 },
 
 	-- Burning Crusade
 	[14822] = 'Burning Crusade',
@@ -74,16 +74,12 @@ Didit.data = {
 	["Utgarde Pinnacle"] =           { ["Normal"] = 1240, ["Heroic"] = 1514 },
 	["The Culling of Stratholme"] =  { ["Normal"] = 1241, ["Heroic"] = 1515 },
 	["Utgarde Keep"] =               { ["Normal"] = 1242, ["Heroic"] = 1504 },
-
 	["Trial of the Champion"] =      { ["Normal"] = 4026, ["Heroic"] = 4027 },
-
 	["The Forge of Souls"] =         { ["Normal"] = 4715, ["Heroic"] = 4716 },
 	["Halls of Reflection"] =        { ["Normal"] = 4726, ["Heroic"] = 4727 },
 	["Pit of Saron"] =               { ["Normal"] = 4720, ["Heroic"] = 4721 },
-
 	-- Raids
 	["Icecrown Citadel"] =           { ["Normal"] = 4653, ["Heroic"] = 4686 },  -- 10 player
-
 
 	-- Cata
 	[15096] = "Cata",
@@ -96,23 +92,41 @@ Didit.data = {
 	["Lost City of the Tol'vir"] = { ["Normal"] = 5736, ["Heroic"] = 5737 },
 
 
+	-- MoP
+	[15164] = "Mists of Pandaria",
+	["Scholomance"] =             {                    ["Heroic"] = 6787 },
+	["Gate of the Setting Sun"] = {                    ["Heroic"] = 6783 },
+	["Shado-Pan Monastery"] =     { ["Normal"] = 6781, ["Heroic"] = 6782 },
+	["Stormstout Brewery"] =      { ["Normal"] = 6777, ["Heroic"] = 6779 },
+	["Mogu'shan Palace"] =        { ["Normal"] = 6778, ["Heroic"] = 6780 },
+	["Siege of Niuzao Temple"] =  {                    ["Heroic"] = 6788 },
 
+	-- WoD
+	[15233] = "WoD",
+	["Bloodmaul Slag Mines"] =      { ["Normal"] = 9258, ["Heroic"] = 9259, ["Mythic"] = 10192 },
+	["Iron Docks"] =                { ["Normal"] = 9260, ["Heroic"] = 9261, ["Mythic"] = 10193 },
+	["Auchindoun"] =                { ["Normal"] = 9262, ["Heroic"] = 9263, ["Mythic"] = 10194 },
+	["Skyreach"] =                  { ["Normal"] = 9266, ["Heroic"] = 9267, ["Mythic"] = 10195 },
+	["Grimrail Depot"] =            { ["Normal"] = 9268, ["Heroic"] = 9269, ["Mythic"] = 10196 },
+	["The Everbloom"] =             { ["Normal"] = 9271, ["Heroic"] = 9272, ["Mythic"] = 10197 },
+	["Shadowmoon Burial Grounds"] = { ["Normal"] = 9273, ["Heroic"] = 9274, ["Mythic"] = 10198 },
+	["Upper Blackrock Spire"] =     { ["Normal"] = 9275, ["Heroic"] = 9276, ["Mythic"] = 10199 },
 
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
-	[""] = { ["Normal"] = 0, ["Heroic"] = 0 },
+	-- Legion
+	[15264] = "Legion",
+	["Darkheart Thicket"] =          { ["Normal"] = 10881, ["Heroic"] = 10882, ["Mythic"] = 10883 },
+	["Neltharion's Lair"] =          { ["Normal"] = 10884, ["Heroic"] = 10885, ["Mythic"] = 10886 },
+	["Halls of Valor"] =             { ["Normal"] = 10887, ["Heroic"] = 10888, ["Mythic"] = 10889 },
+	["Assault on Violet Hold"] =     { ["Normal"] = 10893, ["Heroic"] = 10894, ["Mythic"] = 10895 },
+	["Vault of the Wardens"] =       { ["Normal"] = 10896, ["Heroic"] = 10897, ["Mythic"] = 10898 },
+	["Black Rook Hold"] =            { ["Normal"] = 10899, ["Heroic"] = 10900, ["Mythic"] = 10901 },
+	["Maw of Souls"] =               { ["Normal"] = 10902, ["Heroic"] = 10903, ["Mythic"] = 10904 },
+	["Arcway"] =                     {                                         ["Mythic"] = 10907 },
+	["Court of Stars"] =             {                                         ["Mythic"] = 10910 },
+	["Eye of Azshara"] =             { ["Normal"] = 10937, ["Heroic"] = 10938, ["Mythic"] = 10939 },
 
-
-
+	["Cathedral of Eternal Night"] = {                     ["Heroic"] = 12610, ["Mythic"] = 12611 },
+	["Seat of the Triumvirate"] =    {                     ["Heroic"] = 12612, ["Mythic"] = 12613 },
 
 
 	-- BfA
@@ -128,20 +142,4 @@ Didit.data = {
 	["Tol Dagor"] =             { ["Normal"] = 12780, ["Heroic"] = 12781, ["Mythic"] = 12782 },
 	["Waycrest Manor"] =        { ["Normal"] = 12783, ["Heroic"] = 12784, ["Mythic"] = 12785 },
 
-
-
-
--- WoD
-	["15233"] = "WoD",
-	["Bloodmaul Slag Mines"]     = function(isHeroic) return (isHeroic and 9259 or 9258); end,
-	["Iron Docks"]               = function(isHeroic) return (isHeroic and 9261 or 9260); end,
-	["Auchindoun"]               = function(isHeroic) return (isHeroic and 9263 or 9262); end,
-	["Skyreach"]                 = function(isHeroic) return (isHeroic and 9267 or 9266); end,
-	-- 100 dungeons
-	["Grimrail Depot"]           = function(isHeroic) return (isHeroic and 9269 or 9268); end,
-	["The Everbloom"]            = function(isHeroic) return (isHeroic and 9272 or 9271); end,
-	["Shadowmoon Burial Grounds"]= function(isHeroic) return (isHeroic and 9274 or 9273); end,
-	["Upper Blackrock Spire"]    = function(isHeroic) return (isHeroic and 9276 or 9275); end,
-
-
-};
+}
