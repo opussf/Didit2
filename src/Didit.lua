@@ -18,6 +18,7 @@ COLOR_NEON_BLUE = "|cff4d4dff"
 COLOR_END = "|r"
 
 Didit.lookupPre = "party"
+Didit.diffMap = { ["Timewalking"] = "Heroic" }
 --Didit = {};  -- set in DiditData
 Didit_players= {}  -- Didit.players[unitName][statID] = {["lookup"] = lookupString};
 function Didit.OnLoad()
@@ -50,6 +51,8 @@ function Didit.GROUP_ROSTER_UPDATE()
 	--
 	Didit.Debug( "GROUP_ROSTER_UPDATE" )
 	-- scan the players
+	Screenshot()
+--[[
 	for i = 1, GetNumGroupMembers() do
 		local lookupString = Didit.lookupPre..i
 		local unitName = GetUnitName( lookupString ) or "NotSet"
@@ -66,9 +69,12 @@ function Didit.GROUP_ROSTER_UPDATE()
 	if not Didit_players[Didit.myName] then
 		Didit_players[Didit.myName] = {}
 	end
+]]
 end
 function Didit.PLAYER_ENTERING_WORLD()
 	-- code to run when entering the world
+	-- Look to see if you have entered an instance
+	-- if in instance, determine the statisticID
 	Didit.Print( "Player Entering World" )
 	inInstance, lookupPre = IsInInstance()  -- 1nil, string( arena, none, party, pvp, raid)
 	Didit.lookupPre = lookupPre
@@ -77,25 +83,36 @@ function Didit.PLAYER_ENTERING_WORLD()
 	if( inInstance ) then
 		local iName, iType, iDiff = GetInstanceInfo()
 		local iDiffStr = GetDifficultyInfo( iDiff )
+		iDiffStr = Didit.diffMap[iDiffStr] or iDiffStr
 		-- https://wow.gamepedia.com/DifficultyID
 		-- /run for i=1, 34 do print(i, (GetDifficultyInfo(i))) end
 		-- diff:  1 = Normal, 2 = Heroic, 23 = Mythic, 24,33=Timewalking
-		Didit.Print( string.format( "%s (%s)", (iName or "nil"), (iDiff or "nil") ) )
+
+		Didit.Print( string.format( "%s (%s)", (iName or "nil"), (iDiffStr or "nil") ) )
 		Didit.inDungeon = true
+		if( Didit.data[iName] ) then
+			Didit.Print( iName.." is a known dungeon." )
+			if( Didit.data[iName][iDiffStr] ) then
+				Didit.Print( iDiffStr.." is a known difficulty ("..Didit.data[iName][iDiffStr]..")" )
+			end
+		end
 		Didit.statisticID = ( Didit.data[iName] and Didit.data[iName][iDiffStr] )
 				and Didit.data[iName][iDiffStr] or 932  -- 932 is # of 5 man dungeons entered
 		Didit.Print( string.format( "Stat #: %s (%s - %s)", Didit.statisticID, select( 2, GetAchievementInfo( Didit.statisticID ) ), iDiffStr ) )
 		Didit.Print( ("value: %s"):format( GetStatistic( Didit.statisticID ) ) )
+		Didit.ScanPlayers()
 
-
+--[[
 
 		Didit_players[Didit.myName] = { [Didit.statisticID] = {} }
 		Didit_players[Didit.myName][Didit.statisticID]["value"] = GetStatistic( Didit.statisticID )
 		Didit_players[Didit.myName][Didit.statisticID]["dungeon"] = select( 2, GetDifficultyInfo( Didit.statisticID ) )
 		-- Didit.ScanPlayers()  -- removed?
+]]
 	else
 		Didit.Print( "Not in Dungeon" )
 		Didit.inDungeon = nil
+		Didit.statisticID = nil
 	end
 end
 function Didit.ACHIEVEMENT_EARNED( achievementId )
@@ -126,10 +143,17 @@ function Didit.ScanPlayers()
 		for i = 0, GetNumGroupMembers() do
 			local lookupString = i>0 and Didit.lookupPre..i or "player"
 			local unitName = GetUnitName( lookupString ) or "NotSet"
-			Didit.Print( "unitName: "..unitName )
-			struct = Didit_players[unitName]
-			if struct and
-					(not struct[Didit.statisticID].value or struct[Didit.statisticID].scannedAt+3600 < time()) then
+			Didit.Print( "lookupString: "..lookupString.." unitName: "..unitName )
+			-- init unkown player
+			if not Didit_players[unitName] then
+				Didit.Print( ("init player: %s"):format( unitName ) )
+			end
+			Didit_players[unitName] = Didit_players[unitName] or {}
+			Didit_players[unitName][Didit.statisticID] = Didit_players[unitName][Didit.statisticID] or {}
+
+			local playerInfo = Didit_players[unitName]
+			if( not playerInfo[Didit.statisticID].value or
+					( playerInfo[Didit.statisticID].scannedAt and playerInfo[Didit.statisticID].scannedAt+3600 < time() ) ) then
 					-- missing the value, or the data is older than an hour
 				Didit.Print( string.format( "Scanning: %s (%s)", lookupString, unitName ) )
 				if CheckInteractDistance( lookupString, 1 ) then  -- 1=inspect range
@@ -170,26 +194,26 @@ function Didit.Report( chatChannel )
 		table.insert( Didit.report, string.format( "How many %s do *you* have?", select( 2, GetAchievementInfo( Didit.statisticID ) ) ) )
 		for i = 0, GetNumGroupMembers() do
 			local lookupString = i>0 and Didit.lookupPre..i or "player"
-			local unitName = GetUnitName( lookupString )
+			local unitName = GetUnitName( lookupString ) or "Unknown"
 			local playerInfo = Didit_players[unitName]
 			local reportLine = ""
 			if playerInfo then
 				print( "I have playerInfo" )
-				if playerInfo[Didit.statisticID].value then
-					print( unitName.." has a value for "..Didit.statisticID )
-					reportLine = string.format( "... %s for %s", playerInfo[Didit.statisticID].value, unitName )
-				elseif playerInfo.error then
-					print( unitName.." has an error" )
-					reportLine = string.format( "Error: %s for %s", playerInfo.error, unitName )
-				else
-					reportLine = string.format( "%s has not yet been scanned.", unitName )
+				if playerInfo[Didit.statisticID] then
+					print( Didit.statisticID.." has been set." )
+					if playerInfo[Didit.statisticID].value then
+						print( unitName.." has a value for "..Didit.statisticID )
+						reportLine = string.format( "... %s for %s", playerInfo[Didit.statisticID].value, unitName )
+					elseif playerInfo.error then
+						print( unitName.." has an error" )
+						reportLine = string.format( "Error: %s for %s", playerInfo.error, unitName )
+					else
+						reportLine = string.format( "%s has not yet been scanned.", unitName )
+					end
 				end
+			else
+				Didit.ScanPlayers()
 			end
-			Didit.Print( string.format( "%s for %s = %s",
-					( Didit.statisticID or "nil" ),
-					( unitName or "nil" ),
-					( playerInfo[Didit.statisticID].value or "nil" )
-			) )
 			table.insert( Didit.report, reportLine )
 		end
 		for i, reportLine in pairs( Didit.report ) do
@@ -239,6 +263,10 @@ Didit.commandList = {
 		["help"] = "Display report to say",
 		["cmd"] = function() Didit.Report( "SAY" ); end,
 	},
+	["reset"] = {
+		["help"] = "Fully reset the data",
+		["cmd"] = function() Didit_players = {}; end,
+	},
 	["help"] = {
 		["help"] = "Show this list",
 		["cmd"] = Didit.PrintHelp,
@@ -266,7 +294,7 @@ end
 function Didit.Cmd(msg)
 	local cmd, param = Didit.ParseCmd( msg )
 	if Didit.commandList[cmd] then
-		Didit.commandList[cmd].cmd()
+		Didit.commandList[cmd].cmd( param )
 	else
 		Didit.Report()
 	end
@@ -278,21 +306,20 @@ function Didit.PrintHelp()
 		Didit.Print( helpPre..cmd.." -> "..struct.help )
 	end
 end
-function Didit.GatherData()
-	local dnr = 15062;    -- dungeons & raids category
-	dnr = 14822;
-	dnr = 15096;
-	dnr = 15233
-	dnr = 15409
-	for i = 1, GetCategoryNumAchievements(dnr) do
-		local id, name, points, _, _, _, desc, _, _, _ = GetAchievementInfo(dnr, i);
-		points = GetStatistic(id);
-		Didit.Print(name.." ("..id..") = "..points);
+function Didit.GatherData( param )
+	local dnr = param ~= "" and param or 15062    -- dungeons & raids category
+	if( param == "" ) then
+		local listTable = GetStatisticsCategoryList();
+		for _,cat in pairs(listTable) do
+			Didit.Print(cat..":"..GetCategoryInfo(cat));
+		end
+	else
+		Didit_players["Stats"] = { [dnr] = {} }
+		for i = 1, GetCategoryNumAchievements(dnr) do
+			local id, name, points, _, _, _, desc, _, _, _ = GetAchievementInfo(dnr, i);
+			points = GetStatistic(id);
+			Didit.Print(name.." ("..id..") = "..points);
+			Didit_players.Stats[dnr][name] = { [id] = points }
+		end
 	end
-	--[[
-	local listTable = GetStatisticsCategoryList();
-	for _,cat in pairs(listTable) do
-		Didit.Print(cat..":"..GetCategoryInfo(cat));
-	end
-	]]
 end
