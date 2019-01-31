@@ -219,3 +219,82 @@ function Didit.TooltipHook()
 		end
 	end
 end
+function Didit.PrintHelp()
+	local helpPre = "/Didit "
+	Didit.Print( helpPre )
+	for cmd, struct in pairs( Didit.commandList ) do
+		Didit.Print( helpPre..cmd.." -> "..struct.help )
+	end
+end
+Didit.commandList = {
+	["instance"] = {
+		["help"] = "Display report to the instance",
+		["cmd"] = function() Didit.Report( "INSTANCE" ); end,
+	},
+	["party"] = {
+		["help"] = "Display report to the party",
+		["cmd"] = function() Didit.Report( "PARTY" ); end,
+	},
+	["guild"] = {
+		["help"] = "Display report to guild",
+		["cmd"] = function() Didit.Report( "GUILD" ); end,
+	},
+	["say"] = {
+		["help"] = "Display report to say",
+		["cmd"] = function() Didit.Report( "SAY" ); end,
+	},
+	["reset"] = {
+		["help"] = "Fully reset the data",
+		["cmd"] = function() Didit_players = {}; end,
+	},
+	["help"] = {
+		["help"] = "Show this list",
+		["cmd"] = Didit.PrintHelp,
+	},
+	["gather"] = {
+		["help"] = "Gather data",
+		["cmd"] = Didit.GatherData,
+	},
+	["debug"] = {
+		["help"] = "Toggle Debug",
+		["cmd"] = function() Didit.debug = not Didit.debug; Didit.Print("Debug: "..(Didit.debug and "true" or "false")); end,
+	},
+}
+function Didit.ParseCmd(msg)
+	if msg then
+		msg = string.lower(msg)
+		local a,b,c = strfind(msg, "(%S+)") --contiguous string of non-space characters
+		if a then
+			return c, strsub(msg, b+2)
+		else
+			return ""
+		end
+	end
+end
+function Didit.Cmd(msg)
+	local cmd, param = Didit.ParseCmd( msg )
+	if Didit.commandList[cmd] then
+		Didit.commandList[cmd].cmd( param )
+	else
+		Didit.Report()
+	end
+end
+
+---  Meh
+function Didit.GatherData( param )
+	local dnr = param ~= "" and param or 15062    -- dungeons & raids category
+	if( param == "" ) then
+		local listTable = GetStatisticsCategoryList();
+		for _,cat in pairs(listTable) do
+			Didit.Print(cat..":"..GetCategoryInfo(cat));
+		end
+	else
+		Didit_players["Stats"] = { [dnr] = {} }
+		for i = 1, GetCategoryNumAchievements(dnr) do
+			local id, name, points, _, _, _, desc, _, _, _ = GetAchievementInfo(dnr, i);
+			points = GetStatistic(id);
+			Didit.Print(name.." ("..id..") = "..points);
+			Didit_players.Stats[dnr][name] = { [id] = points }
+		end
+	end
+end

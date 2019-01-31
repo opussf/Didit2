@@ -19,7 +19,7 @@ require "Didit"
 
 
 function test.before()
-	--Didit.debug = true
+	Didit.debug = nil
 	Didit.OnLoad()
 	myParty = { roster = {} }
 	playerRange = {}
@@ -280,5 +280,31 @@ function test.test_Report_ReportTable_NotScanned()
 end
 ---  tooltip tests....  @TODO
 
+---  cmd tests
+function test.test_DoCmd_01()
+	Didit.Cmd()
+end
+function test.test_DoCmd_debug()
+	Didit.debug = nil
+
+	Didit.Cmd( "debug" )
+
+	assertTrue( Didit.debug )
+end
+function test.test_DoCmd_reset()
+	Didit_players = { ["testPlayer"] = { [5738] = { ["value"] = 5 } } }
+
+	Didit.Cmd( "reset" )
+
+	local count = 0
+	for _,_ in pairs( Didit_players ) do
+		count = count + 1
+	end
+
+	assertEquals( 0, count )
+end
+function test.test_DoCmd_help()
+	Didit.Cmd( "help" )
+end
 
 test.run()
