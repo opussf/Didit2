@@ -104,7 +104,7 @@ function Didit.PLAYER_ENTERING_WORLD()
 end
 function Didit.INSPECT_ACHIEVEMENT_READY()
 	-- code to run when achievement compare is ready
-	Didit.Print( "Stat came back for: "..Didit.scanName )
+	Didit.Debug( "Stat came back for: "..Didit.scanName )
 	if Didit.statisticID then
 		Didit_players[Didit.scanName][Didit.statisticID]["value"] = GetComparisonStatistic( Didit.statisticID )
 		Didit_players[Didit.scanName][Didit.statisticID]["name"] = select( 2, GetAchievementInfo( Didit.statisticID ) )
@@ -139,16 +139,16 @@ function Didit.ScanPlayers()
 					SetAchievementComparisonUnit( lookupString )
 					Didit.scanName = unitName
 					DiditFrame:RegisterEvent( "INSPECT_ACHIEVEMENT_READY" )
-					Didit.Print( "In range to inspect: "..Didit.scanName )
+					Didit.Debug( "In range to inspect: "..Didit.scanName )
 					break
 				else  -- out of inspection range
 					Didit_players[unitName]["error"] = "Out of Range"
 				end
 			end
 		end
-		Didit.Print( "Ending scan at: "..date("%x %X") )
+		Didit.Debug( "Ending scan at: "..date("%x %X") )
 	else
-		Didit.Print( "No StatID" )
+		Didit.Debug( "No StatID" )
 	end
 end
 function Didit.Report( chatChannel )
@@ -197,6 +197,8 @@ function Didit.Report( chatChannel )
 				Didit.Print( reportLine, false )
 			end
 		end
+	else
+		Didit.Print( "No statistic to report on." )
 	end
 
 	return chatChannel
