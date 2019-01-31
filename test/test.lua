@@ -19,7 +19,7 @@ require "Didit"
 
 
 function test.before()
-	Didit.debug = true
+	--Didit.debug = true
 	Didit.OnLoad()
 	myParty = { roster = {} }
 	playerRange = {}
@@ -194,11 +194,91 @@ function test.test_DoEvent_INSPECT_ACHIEVEMENT_READY_unregistersEvent()
 
 	assertIsNil( DiditFrame.Events.INSPECT_ACHIEVEMENT_READY )
 end
---[[
-function test.test_DoCmd_01()
-	Didit.Cmd()
+
+-- report
+function test.test_Report_noStats_nilReportTable()
+	myParty = { ["party"] = true, roster = { "skippy" } }
+	Didit.report = nil
+	Didit.statisticID = nil
+
+	Didit.Report()
+	assertIsNil( Didit.report )
 end
-]]
+function test.test_Report_ChatChannel_Instance_NotInInstance_InParty()
+	Didit.statisticID = 5738
+	myParty = { ["party"] = true, roster = { "skippy" } }
+	chatChannel = Didit.Report( "INSTANCE" )
+	assertEquals( "PARTY", chatChannel )
+end
+function test.test_Report_ChatChannel_Instance_InInstance()
+	Didit.statisticID = 5738
+	myParty = { ["instance"] = true, roster = { "skippy" } }
+	chatChannel = Didit.Report( "INSTANCE" )
+	assertEquals( "INSTANCE_CHAT", chatChannel )
+end
+function test.test_Report_ChatChannel_Party_InParty()
+	Didit.statisticID = 5738
+	myParty = { ["party"] = true, roster = { "skippy" } }
+	chatChannel = Didit.Report( "PARTY" )
+	assertEquals( "PARTY", chatChannel )
+end
+function test.test_Report_ChatChannel_Party_NotInParty()
+	Didit.statisticID = 5738
+	myParty = { ["party"] = nil, roster = { } }
+	chatChannel = Didit.Report( "PARTY" )
+	assertEquals( "SAY", chatChannel )
+end
+function test.test_Report_ChatChannel_Guild_InGuild()
+	Didit.statisticID = 5738
+	myGuild = { ["name"] = "Test Guild", }
+	chatChannel = Didit.Report( "GUILD" )
+	assertEquals( "GUILD", chatChannel )
+end
+function test.test_Report_ChatChannel_Guild_NotInGuild()
+	Didit.statisticID = 5738
+	myGuild = { }
+	chatChannel = Didit.Report( "GUILD" )
+	assertEquals( "SAY", chatChannel )
+end
+function test.test_Report_ReportTable_Title()
+	myParty = { ["roster"] = {} }
+	Didit.statisticID = 5738
+	Didit_players = {}
+
+	Didit.Report( "SAY" )
+	assertEquals( "How many Deadmines do *you* have?", Didit.report[1] )
+end
+function test.test_Report_ReportTable_StatLine()
+	Didit.statisticID = 5738
+	myParty = { ["party"] = true, roster = { "skippy" } }
+	Didit_players = { ["testPlayer"] = { [5738] = { ["value"] = 5 } } }
+	Didit.Report( "SAY" )
+	assertEquals( "...  5 for testPlayer", Didit.report[2] )
+end
+function test.test_Report_ReportTable_Error()
+	myParty = { ["party"] = true, roster = { "skippy" } }
+	Didit.statisticID = 5738
+	Didit.lookupPre = "party" -- this would normally be set in PLAYER_ENTERING_WORLD
+	Didit_players = { ["testPlayer"] = { [5738] = { ["value"] = 5 } } }
+	Didit_players["skippy"] = { ["error"] = "Out of range" }
+
+	Didit.Report( "SAY" )
+
+	assertEquals( "Error: Out of range for skippy", Didit.report[3] )
+end
+function test.test_Report_ReportTable_NotScanned()
+	-- no stat, no error
+	myParty = { ["party"] = true, roster = { "skippy" } }
+	Didit.statisticID = 5738
+	Didit.lookupPre = "party" -- this would normally be set in PLAYER_ENTERING_WORLD
+	Didit_players = { ["testPlayer"] = { [5738] = { ["value"] = 5 } } }
+	Didit_players["skippy"] = { }
+
+	Didit.Report( "SAY" )
+
+	assertEquals( "skippy has not yet been scanned.", Didit.report[3] )
+end
+---  tooltip tests....  @TODO
 
 
 test.run()

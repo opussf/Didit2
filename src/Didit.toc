@@ -4,7 +4,7 @@
 ## Author: Parq of Bloodhoof, Opussf
 ## Version: @VERSION@
 ## Description: Shows number of runs a char has done of a dungeon
-## SavedVariables: Didit_players
+## SavedVariables: Didit_players Didit_instanceIDs
 
 DiditData.lua
 Didit.lua

@@ -204,6 +204,8 @@ globals.FACTION_STANDING_LABEL6 = "Honored"
 globals.FACTION_STANDING_LABEL7 = "Revered"
 globals.FACTION_STANDING_LABEL8 = "Exalted"
 
+LE_PARTY_CATEGORY_INSTANCE = 2  -- from /dump in client
+
 --			TT.fName, TT.fDescription, TT.fStandingId, TT.fBottomValue, TT.fTopValue, TT.fEarnedValue, TT.fAtWarWith,
 --					TT.fCanToggleAtWar, TT.fIsHeader, TT.fIsCollapsed, TT.fIsWatched, TT.isChild, TT.factionID,
 --					TT.hasBonusRepGain, TT.canBeLFGBonus = GetFactionInfo(factionIndex);
@@ -1107,7 +1109,13 @@ function InterfaceOptionsFrame_OpenToCategory()
 end
 function IsInGroup( groupType )
 	-- http://wowprogramming.com/docs/api/IsInGroup
-	return true
+--	LE_PARTY_CATEGORY_INSTANCE = 2  -- from /dump in client
+	groupType = groupType or 1
+	local groupTypes = { [1] = "party", [2] = "instance" }
+	key = groupTypes[groupType]
+
+	--print( "IsInGroup( "..(groupType or "NIL" ).." ) -->"..(key or "NIL") )
+	return( myParty[key] and 1 or nil )
 end
 function IsInGuild()
 	-- http://www.wowwiki.com/API_IsInGuild
@@ -1296,6 +1304,7 @@ function SendChatMessage( msg, chatType, language, channel )
 	-- This could simulate sending text to the channel, in the language, and raise the correct event.
 	-- returns nil
 	-- @TODO: Expand this
+	print( string.format( "%s: %s", chatType, msg ) )
 end
 function SetAchievementComparisonUnit( lookupStr )
 	-- mostly does nothing...  Just allows INSPECT_ACHIEVEMENT_READY to happen,
