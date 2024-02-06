@@ -7,16 +7,7 @@ require "wowTest"
 
 test.outFileName = "testOut.xml"
 
--- Figure out how to parse the XML here, until then....
-DiditFrame = CreateFrame()
-SendMailNameEditBox = CreateFontString("SendMailNameEditBox")
-GameTooltip = CreateFrame( "GameTooltip", "tooltip" )
-
--- require the file to test
-package.path = "../src/?.lua;'" .. package.path
-require "DiditData"
-require "Didit"
-
+ParseTOC ("../src/Didit.toc" )
 
 function test.before()
 	Didit.debug = nil
@@ -200,25 +191,27 @@ function test.test_Report_noStats_nilReportTable()
 	myParty = { ["party"] = true, roster = { "skippy" } }
 	Didit.report = nil
 	Didit.statisticID = nil
-
 	Didit.Report()
 	assertIsNil( Didit.report )
 end
 function test.test_Report_ChatChannel_Instance_NotInInstance_InParty()
 	Didit.statisticID = 5738
 	myParty = { ["party"] = true, roster = { "skippy" } }
+	Didit.PLAYER_ENTERING_WORLD()
 	chatChannel = Didit.Report( "INSTANCE" )
 	assertEquals( "PARTY", chatChannel )
 end
 function test.test_Report_ChatChannel_Instance_InInstance()
 	Didit.statisticID = 5738
 	myParty = { ["instance"] = true, roster = { "skippy" } }
+	Didit.PLAYER_ENTERING_WORLD()
 	chatChannel = Didit.Report( "INSTANCE" )
 	assertEquals( "INSTANCE_CHAT", chatChannel )
 end
 function test.test_Report_ChatChannel_Party_InParty()
 	Didit.statisticID = 5738
 	myParty = { ["party"] = true, roster = { "skippy" } }
+	Didit.PLAYER_ENTERING_WORLD()
 	chatChannel = Didit.Report( "PARTY" )
 	assertEquals( "PARTY", chatChannel )
 end
@@ -252,6 +245,7 @@ function test.test_Report_ReportTable_StatLine()
 	Didit.statisticID = 5738
 	myParty = { ["party"] = true, roster = { "skippy" } }
 	Didit_players = { ["testPlayer"] = { [5738] = { ["value"] = 5 } } }
+	Didit.PLAYER_ENTERING_WORLD()
 	Didit.Report( "SAY" )
 	assertEquals( "...  5 for testPlayer", Didit.report[2] )
 end
@@ -282,18 +276,16 @@ end
 
 ---  cmd tests
 function test.test_DoCmd_01()
+	Didit.statisticID = 5738
 	Didit.Cmd()
 end
 function test.test_DoCmd_debug()
 	Didit.debug = nil
-
 	Didit.Cmd( "debug" )
-
 	assertTrue( Didit.debug )
 end
 function test.test_DoCmd_reset()
 	Didit_players = { ["testPlayer"] = { [5738] = { ["value"] = 5 } } }
-
 	Didit.Cmd( "reset" )
 
 	local count = 0
