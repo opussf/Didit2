@@ -6,6 +6,8 @@ addonData = { ["Version"] = "1.0",
 require "wowTest"
 
 test.outFileName = "testOut.xml"
+test.coberturaFileName = "../coverage.xml"
+test.coverageReportPercent = true
 
 ParseTOC ("../src/Didit.toc" )
 
